@@ -5,13 +5,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Archive Release
-      uses: thedoctor0/zip-release@master
+    - uses: montudor/action-zip@v1
       with:
-        type: 'zip'
-        filename: 'release.zip'
-    - name: Upload Release
-      uses: ncipollo/release-action@v1
+        args: zip -qq -r extension.zip .
+    - name: Get Time
+      id: time
+      uses: nanzm/get-time-action@v1.1
       with:
-        artifacts: "release.zip"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        timeZone: -7
+        format: 'YYYY-MM-DD'
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Extension Release ${{ steps.time.outputs.time }}
+        tag_name: ${{ steps.time.outputs.time }}
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./extension.zip
+        asset_name: extension.zip
