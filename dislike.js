@@ -9,7 +9,16 @@ function getButtons() {
 
 function setDislikes(dislikesCount) {
     console.log(getButtons());
-    getButtons()[7].innerText = dislikesCount;
+    getButtons()[7].innerText = formatNumber(dislikesCount);
+}
+
+function formatNumber(num) {
+    const formatter = Intl.NumberFormat(document.documentElement.lang, {
+        notation: "compact",
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    });
+    return formatter.format(num);
 }
 
 function updateUI() {
